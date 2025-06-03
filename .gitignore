@@ -4,3 +4,5 @@
 /__pycache__
 /venv
 Tests/__pycache__/test_example.cpython-313-pytest-8.3.5.pyc
+main.py
+Tests/__pycache__/test_example.cpython-313-pytest-8.3.5.pyc
