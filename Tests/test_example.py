@@ -11,8 +11,8 @@ def driver(request):
     return wd
 
 
-def login_as_admin(driver):
-    driver.get("http://localhost/litecart/admin/")
+def login_as_admin(driver, link):
+    driver.get(link)
     driver.find_element(By.NAME, "username").send_keys("admin")
     driver.find_element(By.NAME, "password").send_keys("admin")
     driver.find_element(By.NAME, "login").click()
@@ -20,7 +20,7 @@ def login_as_admin(driver):
 
 def find_title(driver):
     driver.find_element(By.TAG_NAME, "h1")
-    
+
 
 def check_stickers(products):
     for product in products:
@@ -178,3 +178,29 @@ def test_check_product_stickers(driver):
 
     latest_products = driver.find_elements(By.CSS_SELECTOR, "div#box-latest-products li.product")
     check_stickers(latest_products)
+
+
+def test_check_countries_and_zones_lists(driver):
+    login_as_admin(driver, "http://localhost/litecart/admin/?app=countries&doc=countries")
+    rows = driver.find_elements(By.CSS_SELECTOR, "tr.row")
+
+    countries = []
+    rows_with_zones = []
+
+    for row in rows:
+        countries.append(row.find_element(By.CSS_SELECTOR, "td:nth-child(5) a").text)
+
+        if row.find_element(By.CSS_SELECTOR, "td:nth-child(6)").text != '0':
+            rows_with_zones.append(row.find_element(By.CSS_SELECTOR, "td:nth-child(5) a").get_attribute("href"))
+
+    assert countries == sorted(countries), f"The list of countries {countries} is not alphabetically sorted"
+
+    for link in rows_with_zones:
+        driver.get(link)
+        country_zones = []
+        zones = driver.find_elements(By.CSS_SELECTOR, "table.dataTable tr td:nth-child(3)")
+        for zone in zones:
+            if zone.text != '':
+                country_zones.append(zone.text)
+
+        assert country_zones == sorted(country_zones), f"The list of zones {country_zones} is not alphabetically sorted"
