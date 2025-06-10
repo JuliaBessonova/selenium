@@ -187,3 +187,24 @@ def test_check_countries_and_zones_lists(driver):
                 country_zones.append(zone.text)
 
         assert country_zones == sorted(country_zones), f"The list of zones {country_zones} is not alphabetically sorted"
+
+
+def test_check_country_zones_sorting(driver):
+    login_as_admin(driver, "http://localhost/litecart/admin/?app=geo_zones&doc=geo_zones")
+
+    country_links = []
+
+    rows = driver.find_elements(By.CSS_SELECTOR, "tr.row td:nth-child(3) a")
+
+    for row in rows:
+        country_links.append(row.get_attribute("href"))
+
+
+    for link in country_links:
+        driver.get(link)
+        zone_list = []
+        zones = driver.find_elements(By.CSS_SELECTOR, "table.dataTable tr td:nth-child(3) option[selected=selected]")
+        for zone in zones:
+            zone_list.append(zone.text)
+
+        assert zone_list == sorted(zone_list), f"The list of zones {zone_list} is not alphabetically sorted"
