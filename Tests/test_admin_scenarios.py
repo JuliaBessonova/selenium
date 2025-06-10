@@ -189,6 +189,7 @@ def test_check_countries_and_zones_lists(driver):
         assert country_zones == sorted(country_zones), f"The list of zones {country_zones} is not alphabetically sorted"
 
 
+
 def test_check_country_zones_sorting(driver):
     login_as_admin(driver, "http://localhost/litecart/admin/?app=geo_zones&doc=geo_zones")
 
