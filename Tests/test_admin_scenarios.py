@@ -193,12 +193,10 @@ def test_check_country_zones_sorting(driver):
     login_as_admin(driver, "http://localhost/litecart/admin/?app=geo_zones&doc=geo_zones")
 
     country_links = []
-
     rows = driver.find_elements(By.CSS_SELECTOR, "tr.row td:nth-child(3) a")
 
     for row in rows:
         country_links.append(row.get_attribute("href"))
-
 
     for link in country_links:
         driver.get(link)
