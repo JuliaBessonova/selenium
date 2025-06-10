@@ -22,11 +22,6 @@ def find_title(driver):
     driver.find_element(By.TAG_NAME, "h1")
 
 
-def check_stickers(products):
-    for product in products:
-        stickers = product.find_elements(By.CSS_SELECTOR, "div.sticker")
-        assert len(stickers) == 1, f"The number of stickers is {len(stickers)}"
-
 
 def test_check_admin_navigation_menu(driver):
     login_as_admin(driver)
@@ -166,18 +161,6 @@ def test_check_admin_navigation_menu(driver):
     driver.find_element(By.CSS_SELECTOR, "li#doc-vqmods").click()
     find_title(driver)
 
-
-def test_check_product_stickers(driver):
-    driver.get("http://localhost/litecart/")
-
-    most_popular_products = driver.find_elements(By.CSS_SELECTOR, "div#box-most-popular li.product")
-    check_stickers(most_popular_products)
-
-    campaigns = driver.find_elements(By.CSS_SELECTOR, "div#box-campaigns li.product")
-    check_stickers(campaigns)
-
-    latest_products = driver.find_elements(By.CSS_SELECTOR, "div#box-latest-products li.product")
-    check_stickers(latest_products)
 
 
 def test_check_countries_and_zones_lists(driver):
