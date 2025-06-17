@@ -1,6 +1,9 @@
 import pytest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import Select
+import random
+import string
 
 
 @pytest.fixture
@@ -15,6 +18,11 @@ def check_stickers(products):
     for product in products:
         stickers = product.find_elements(By.CSS_SELECTOR, "div.sticker")
         assert len(stickers) == 1, f"The number of stickers is {len(stickers)}"
+
+
+def generate_random_string(length):
+    letters = string.ascii_letters + string.digits
+    return ''.join(random.choice(letters) for i in range(length))
 
 
 def test_check_product_stickers(driver):
@@ -69,3 +77,31 @@ def test_check_product_information(driver):
 
     assert product_page_campaign_price_size['height'] > product_page_regular_price_size['height'], f"Campaign price height {product_page_campaign_price_size['height']} is not larger than regular price height {product_page_regular_price_size['height']}"
     assert product_page_campaign_price_size['width'] > product_page_regular_price_size['width'], f"Campaign price width {product_page_campaign_price_size['width']} is not larger than regular price width {product_page_regular_price_size['width']}"
+
+
+def test_create_new_user_account(driver):
+    randstring = generate_random_string(10)
+    email = "testuser" + randstring + "@test.com"
+    password = "Tester01"
+
+    driver.get("http://localhost/litecart/")
+    driver.find_element(By.CSS_SELECTOR, "table tr:nth-child(5)").click()
+
+    driver.find_element(By.CSS_SELECTOR, "input[name=firstname]").send_keys("Ivan")
+    driver.find_element(By.CSS_SELECTOR, "input[name=lastname]").send_keys("Ivanov")
+    driver.find_element(By.CSS_SELECTOR, "input[name=address1]").send_keys("address")
+    driver.find_element(By.CSS_SELECTOR, "input[name=postcode]").send_keys("12345")
+    driver.find_element(By.CSS_SELECTOR, "input[name=city]").send_keys("New York")
+    select = Select(driver.find_element(By.CSS_SELECTOR, "select[name=country_code]"))
+    select.select_by_visible_text("United States")
+    driver.find_element(By.CSS_SELECTOR, "input[name=email]").send_keys(email)
+    driver.find_element(By.CSS_SELECTOR, "input[name=phone]").send_keys("11111111111")
+    driver.find_element(By.CSS_SELECTOR, "input[name=password]").send_keys(password)
+    driver.find_element(By.CSS_SELECTOR, "input[name=confirmed_password]").send_keys(password)
+    driver.find_element(By.CSS_SELECTOR, "button[name=create_account]").click()
+    driver.find_element(By.CSS_SELECTOR, "div#box-account li:nth-child(4)").click()
+
+    driver.find_element(By.CSS_SELECTOR, "input[name=email]").send_keys(email)
+    driver.find_element(By.CSS_SELECTOR, "input[name=password]").send_keys(password)
+    driver.find_element(By.CSS_SELECTOR, "button[name=login]").click()
+    driver.find_element(By.CSS_SELECTOR, "div#box-account li:nth-child(4)").click()
