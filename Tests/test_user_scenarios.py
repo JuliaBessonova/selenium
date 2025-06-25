@@ -21,8 +21,8 @@ def check_stickers(products):
 
 
 def generate_random_string(length):
-    letters = string.ascii_letters + string.digits
-    return ''.join(random.choice(letters) for i in range(length))
+    #letters = string.ascii_letters + string.digits
+    return ''.join(random.choice(string.digits) for i in range(length))
 
 
 def test_check_product_stickers(driver):
@@ -92,16 +92,17 @@ def test_create_new_user_account(driver):
     driver.find_element(By.CSS_SELECTOR, "input[name=address1]").send_keys("address")
     driver.find_element(By.CSS_SELECTOR, "input[name=postcode]").send_keys("12345")
     driver.find_element(By.CSS_SELECTOR, "input[name=city]").send_keys("New York")
-    select = Select(driver.find_element(By.CSS_SELECTOR, "select[name=country_code]"))
-    select.select_by_visible_text("United States")
+    driver.find_element(By.CSS_SELECTOR, "span.select2-selection__rendered").click()
+    driver.find_element(By.CSS_SELECTOR, "input.select2-search__field").send_keys("United States")
+    driver.find_element(By.CSS_SELECTOR, "li.select2-results__option--highlighted").click()
     driver.find_element(By.CSS_SELECTOR, "input[name=email]").send_keys(email)
     driver.find_element(By.CSS_SELECTOR, "input[name=phone]").send_keys("11111111111")
     driver.find_element(By.CSS_SELECTOR, "input[name=password]").send_keys(password)
     driver.find_element(By.CSS_SELECTOR, "input[name=confirmed_password]").send_keys(password)
     driver.find_element(By.CSS_SELECTOR, "button[name=create_account]").click()
-    driver.find_element(By.CSS_SELECTOR, "div#box-account li:nth-child(4)").click()
+    driver.find_element(By.LINK_TEXT, "Logout").click()
 
     driver.find_element(By.CSS_SELECTOR, "input[name=email]").send_keys(email)
     driver.find_element(By.CSS_SELECTOR, "input[name=password]").send_keys(password)
     driver.find_element(By.CSS_SELECTOR, "button[name=login]").click()
-    driver.find_element(By.CSS_SELECTOR, "div#box-account li:nth-child(4)").click()
+    driver.find_element(By.LINK_TEXT, "Logout").click()
