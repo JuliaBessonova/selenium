@@ -46,16 +46,20 @@ def test_check_product_information(driver):
     campaigns_regular_price = campaigns_product.find_element(By.CSS_SELECTOR, "s.regular-price").text
     campaigns_campaign_price = campaigns_product.find_element(By.CSS_SELECTOR, "strong.campaign-price").text
 
-    assert "119, 119, 119" in campaigns_product.find_element(By.CSS_SELECTOR, "s.regular-price").value_of_css_property("color"), "Regular price color in campaigns block contains (119, 119, 119)"
+    campaigns_regular_price_color = campaigns_product.find_element(By.CSS_SELECTOR, "s.regular-price").value_of_css_property("color").strip("rgba()").split(",")
+
+    assert int(campaigns_regular_price_color[0].strip()) == int(campaigns_regular_price_color[1].strip()) == int(campaigns_regular_price_color[2].strip()), "Regular price is not grey"
     assert "line-through" in campaigns_product.find_element(By.CSS_SELECTOR, "s.regular-price").value_of_css_property("text-decoration"), "Regular price text-decoration in campaigns block does not contain line-through"
-    assert "204, 0, 0" in campaigns_product.find_element(By.CSS_SELECTOR, "strong.campaign-price").value_of_css_property("color"), "Campaign price color in campaigns block contains (204, 0, 0)"
+
+    campaigns_campaign_price_color = campaigns_product.find_element(By.CSS_SELECTOR, "strong.campaign-price").value_of_css_property("color").strip("rgba()").split(",")
+    
+    assert int(campaigns_campaign_price_color[0].strip()) != 0 and int(campaigns_campaign_price_color[1].strip()) == 0 and int(campaigns_campaign_price_color[2].strip()) == 0, "Campaign price color is not red"
     assert int(campaigns_product.find_element(By.CSS_SELECTOR, "strong.campaign-price").value_of_css_property("font-weight")) >= 700, "Campaign price font-weight in campaigns block is not equal to 900"
 
-    regular_price_size = campaigns_product.find_element(By.CSS_SELECTOR, "s.regular-price").size
-    campaign_price_size = campaigns_product.find_element(By.CSS_SELECTOR, "strong.campaign-price").size
+    campaign_price_size = float(campaigns_product.find_element(By.CSS_SELECTOR, "strong.campaign-price").value_of_css_property("font-size")[:-2])
+    regular_price_size = float(campaigns_product.find_element(By.CSS_SELECTOR, "s.regular-price").value_of_css_property("font-size")[:-2])
 
-    assert campaign_price_size['height'] > regular_price_size['height'], f"Campaign price height {campaign_price_size['height']} is not larger than regular price height {regular_price_size['height']}"
-    assert campaign_price_size['width'] > regular_price_size['width'], f"Campaign price width {campaign_price_size['width']} is not larger than regular price width {regular_price_size['width']}"
+    assert campaign_price_size > regular_price_size, f"Campaign price height {campaign_price_size} is not larger than regular price height {regular_price_size}"
 
     campaigns_product.click()
 
@@ -67,16 +71,21 @@ def test_check_product_information(driver):
     assert campaigns_regular_price == product_regular_price, f"Regular prices in campaigns block {campaigns_regular_price} and on product page {product_regular_price} are not equal"
     assert campaigns_campaign_price == product_campaign_price, f"Campaign prices in campaigns block {campaigns_campaign_price} and on product page {product_campaign_price} are not equal"
 
-    assert "102, 102, 102" in driver.find_element(By.CSS_SELECTOR, "s.regular-price").value_of_css_property("color"), "Regular price color on product page coontains (102, 102, 102)"
+    product_page_regular_price_color = driver.find_element(By.CSS_SELECTOR, "s.regular-price").value_of_css_property("color").strip("rgba()").split(",")
+
+    assert int(product_page_regular_price_color[0].strip()) == int(product_page_regular_price_color[1].strip()) == int(product_page_regular_price_color[2].strip()), "Regular price is not grey"
     assert "line-through" in driver.find_element(By.CSS_SELECTOR, "s.regular-price").value_of_css_property("text-decoration"), "Regular price text-decoration on product page does not contain line-through"
-    assert "204, 0, 0" in driver.find_element(By.CSS_SELECTOR, "strong.campaign-price").value_of_css_property("color"), "Campaign price color on product page contains (204, 0, 0)"
+
+    product_page_price_color = driver.find_element(By.CSS_SELECTOR, "strong.campaign-price").value_of_css_property("color").strip("rgba()").split(",")
+
+    assert int(product_page_price_color[0].strip()) != 0 and int(product_page_price_color[1].strip()) == 0 and int(product_page_price_color[2].strip()) == 0, "Campaign price color is not red"
     assert int(driver.find_element(By.CSS_SELECTOR, "strong.campaign-price").value_of_css_property("font-weight")) >= 700, "Campaign price font-weight on product page is not equal to 700"
 
-    product_page_regular_price_size = driver.find_element(By.CSS_SELECTOR, "s.regular-price").size
-    product_page_campaign_price_size = driver.find_element(By.CSS_SELECTOR, "strong.campaign-price").size
+    product_page_regular_price_size = float(driver.find_element(By.CSS_SELECTOR, "s.regular-price").value_of_css_property("font-size")[:-2])
+    product_page_campaign_price_size = float(driver.find_element(By.CSS_SELECTOR, "strong.campaign-price").value_of_css_property("font-size")[:-2])
 
-    assert product_page_campaign_price_size['height'] > product_page_regular_price_size['height'], f"Campaign price height {product_page_campaign_price_size['height']} is not larger than regular price height {product_page_regular_price_size['height']}"
-    assert product_page_campaign_price_size['width'] > product_page_regular_price_size['width'], f"Campaign price width {product_page_campaign_price_size['width']} is not larger than regular price width {product_page_regular_price_size['width']}"
+    assert product_page_campaign_price_size > product_page_regular_price_size, f"Campaign price height {product_page_campaign_price_size} is not larger than regular price height {product_page_regular_price_size}"
+
 
 
 def test_create_new_user_account(driver):
