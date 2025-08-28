@@ -2,6 +2,8 @@ import pytest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import random
 import string
 
@@ -115,3 +117,30 @@ def test_create_new_user_account(driver):
     driver.find_element(By.CSS_SELECTOR, "input[name=password]").send_keys(password)
     driver.find_element(By.CSS_SELECTOR, "button[name=login]").click()
     driver.find_element(By.LINK_TEXT, "Logout").click()
+
+
+def test_add_and_delete_items_from_cart(driver):
+    driver.get("http://localhost/litecart/")
+
+    wait = WebDriverWait(driver, 2)
+    cart_quantity = int(driver.find_element(By.CSS_SELECTOR, "div#cart-wrapper span.quantity").text)
+
+    while cart_quantity < 3:
+        driver.find_element(By.CSS_SELECTOR, "div#box-most-popular li:nth-child(1)").click()
+        driver.find_element(By.CSS_SELECTOR, "button[name=add_cart_product]").click()
+        wait.until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, "div#cart-wrapper span.quantity"), str(cart_quantity + 1)))
+        cart_quantity += 1
+        driver.find_element(By.CSS_SELECTOR, "div.content nav#breadcrumbs li:nth-child(1)").click()
+
+    driver.find_element(By.CSS_SELECTOR, "div#cart a.link").click()
+
+    data_table = driver.find_element(By.CSS_SELECTOR, "table.dataTable")
+    lines_in_table = len(driver.find_elements(By.CSS_SELECTOR, "table.dataTable td.item"))
+
+    while lines_in_table > 1:
+        driver.find_element(By.CSS_SELECTOR, "button[name=remove_cart_item]").click()
+        wait.until(lambda driver: len(driver.find_elements(By.CSS_SELECTOR, "table.dataTable td.item")) == lines_in_table - 1)
+        lines_in_table -=1
+
+    driver.find_element(By.CSS_SELECTOR, "button[name=remove_cart_item]").click()
+    wait.until(EC.staleness_of(data_table))
