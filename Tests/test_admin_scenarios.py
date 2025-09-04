@@ -179,3 +179,25 @@ def test_add_product_to_a_catalog(driver):
         products_names.append(product.text)
 
     assert product_name in products_names, f"Created product {product_name} is not in the catalog"
+
+
+def test_check_links_open_in_new_window(driver):
+    login_as_admin(driver, "http://localhost/litecart/admin/?app=countries&doc=countries")
+    driver.find_element(By.CSS_SELECTOR, "#content a.button").click()
+
+    external_links = driver.find_elements(By.CSS_SELECTOR, "a i.fa-external-link")
+
+    main_window = driver.current_window_handle
+    old_windows = driver.window_handles
+    wait = WebDriverWait(driver, 2)
+
+    for link in external_links:
+        link.click()
+        wait.until(lambda driver: len(driver.window_handles) > len(old_windows))
+
+        handles = driver.window_handles
+        for handle in handles:
+            if handle != main_window:
+                driver.switch_to.window(handle)
+                driver.close()
+                driver.switch_to.window(main_window)
