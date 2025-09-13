@@ -201,3 +201,20 @@ def test_check_links_open_in_new_window(driver):
                 driver.switch_to.window(handle)
                 driver.close()
                 driver.switch_to.window(main_window)
+
+
+def test_check_browser_log(driver):
+    login_as_admin(driver, "http://localhost/litecart/admin/?app=catalog&doc=catalog&category_id=1")
+
+    links = []
+    rows = driver.find_elements(By.CSS_SELECTOR, "table.dataTable td a[title=Edit]")
+
+    for row in rows:
+        links.append(row.get_attribute("href"))
+
+    for link in links:
+        driver.get(link)
+        browser_log = driver.get_log("browser")
+        
+        if len(browser_log) != 0:
+            print(f"Page {link} contains messages in browser log: {browser_log}")
