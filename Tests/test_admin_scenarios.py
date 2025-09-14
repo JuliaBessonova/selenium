@@ -215,6 +215,5 @@ def test_check_browser_log(driver):
     for link in links:
         driver.get(link)
         browser_log = driver.get_log("browser")
-        
-        if len(browser_log) != 0:
-            print(f"Page {link} contains messages in browser log: {browser_log}")
+
+        assert len(browser_log) == 0, f"Page {link} contains messages in browser log: {browser_log}"
